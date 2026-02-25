@@ -28,9 +28,10 @@ streamlit run app.py
 Deployed using Streamlit Cloud
 
 ## 👨‍💻 Author
-Your Name  
-Department of CSE  
-Your College Name
+EROTHU ABHISHEK
+Department of Electronics and Communication Engineering
+ALLIANCE UNIVERSITY
+
 
 ---
 This project demonstrates the use of Generative AI in education technology.
