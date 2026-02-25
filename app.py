@@ -1,19 +1,10 @@
-
 import streamlit as st
-from transformers import pipeline
+import requests
 
 st.set_page_config(page_title="AI Study Buddy 2.0", page_icon="🎓")
 
 st.title("🎓 AI-Powered Study Buddy 2.0")
-st.markdown("An Adaptive Learning Companion using Generative AI")
-
-@st.cache_resource
-def load_models():
-    generator = pipeline("text2text-generation", model="google/flan-t5-base")
-    summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
-    return generator, summarizer
-
-generator, summarizer = load_models()
+st.markdown("Adaptive Learning Companion using AI")
 
 option = st.selectbox(
     "Select Feature",
@@ -22,6 +13,13 @@ option = st.selectbox(
 
 user_input = st.text_area("Enter your topic or study notes here:")
 
+def get_response(prompt):
+    api_url = "https://api-inference.huggingface.co/models/google/flan-t5-small"
+    headers = {"Authorization": "Bearer YOUR_HF_API_KEY"}
+    payload = {"inputs": prompt}
+    response = requests.post(api_url, headers=headers, json=payload)
+    return response.json()
+
 if st.button("Generate Output"):
     if user_input.strip() == "":
         st.warning("Please enter some text.")
@@ -29,21 +27,19 @@ if st.button("Generate Output"):
         with st.spinner("Processing with AI..."):
 
             if option == "Explain Concept":
-                prompt = f"Explain the following concept in simple student-friendly language:\n{user_input}"
-                result = generator(prompt, max_length=200)
-                st.success("Explanation:")
-                st.write(result[0]['generated_text'])
-
+                prompt = f"Explain in simple language: {user_input}"
             elif option == "Summarize Notes":
-                result = summarizer(user_input, max_length=150, min_length=40)
-                st.success("Summary:")
-                st.write(result[0]['summary_text'])
-
+                prompt = f"Summarize this text: {user_input}"
             elif option == "Generate Quiz":
-                prompt = f"Generate 3 multiple choice questions with options from the topic:\n{user_input}"
-                result = generator(prompt, max_length=250)
-                st.success("Quiz:")
-                st.write(result[0]['generated_text'])
+                prompt = f"Generate 3 MCQ questions from: {user_input}"
+
+            result = get_response(prompt)
+
+            try:
+                st.success("Output:")
+                st.write(result[0]["generated_text"])
+            except:
+                st.error("Error generating response. Check API key.")
 
 st.markdown("---")
-st.markdown("Built using Python, Streamlit & Hugging Face | IBM SkillsBuild Capstone")
+st.markdown("Built using Streamlit & Hugging Face API")
