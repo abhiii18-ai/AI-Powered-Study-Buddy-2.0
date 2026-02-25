@@ -14,7 +14,7 @@ option = st.selectbox(
 user_input = st.text_area("Enter your topic or study notes here:")
 
 def get_response(prompt):
-    api_url = "https://api-inference.huggingface.co/models/google/flan-t5-small"
+    api_url = "https://router.huggingface.co/hf-inference/models/google/flan-t5-small"
     headers = {"Authorization": f"Bearer {st.secrets['HF_API_KEY']}"}
     payload = {"inputs": prompt}
     
