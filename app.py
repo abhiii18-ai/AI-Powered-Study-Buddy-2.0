@@ -17,7 +17,12 @@ def get_response(prompt):
     api_url = "https://api-inference.huggingface.co/models/google/flan-t5-small"
     headers = {"Authorization": f"Bearer {st.secrets['HF_API_KEY']}"}
     payload = {"inputs": prompt}
+    
     response = requests.post(api_url, headers=headers, json=payload)
+    
+    if response.status_code != 200:
+        return {"error": response.text}
+    
     return response.json()
 
 if st.button("Generate Output"):
@@ -25,7 +30,7 @@ if st.button("Generate Output"):
         st.warning("Please enter some text.")
     else:
         with st.spinner("Processing with AI..."):
-
+            
             if option == "Explain Concept":
                 prompt = f"Explain in simple language: {user_input}"
             elif option == "Summarize Notes":
@@ -35,11 +40,11 @@ if st.button("Generate Output"):
 
             result = get_response(prompt)
 
-            try:
+            if "error" in result:
+                st.error(f"API Error: {result['error']}")
+            else:
                 st.success("Output:")
                 st.write(result[0]["generated_text"])
-            except:
-                st.error("Error generating response. Check API key.")
 
 st.markdown("---")
 st.markdown("Built using Streamlit & Hugging Face API")
